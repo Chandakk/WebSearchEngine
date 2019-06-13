@@ -13,21 +13,88 @@ import java.util.regex.Pattern;
 
 import org.jsoup.Jsoup;
 
+import Controller.CreateTST;
+import Controller.Main;
+import Controller.QuickSelect;
+
 public class countmatch {
+	
+	
+	public static int findoccurences(String searched) {
+		int countofword=0;
+		for(int i=0;i<CreateTST.myfile.length;i++) {
+		countofword+=CreateTST.table[i+1][CreateTST.st.get(searched)];
+		}
+		System.out.println(countofword);
+		return countofword;
+		}
+	
+	public int searchOccurance(String cname) {
+		
+		//File[] myFile=new File("C:\\Users\\MEERA\\Documents\\MAC\\ACC\\workspace\\WebSearchEngine\\TEXT").listFiles();
+		if(CreateTST.st !=null) {
+		int indexN=CreateTST.st.get(cname);
+		System.out.println("occ::"+indexN);
+		ArrayList<Integer> occArray=CreateTST.index.get(indexN);
+		
+		  int con=0; 
+		  for(Integer x: occArray) 
+		  { con=con+x; }
+		  System.out.println("COUNT==="+con);
+		  return con;
+		}else {
+			return 0;
+		}
+		 
+	}
+	
+	public File[] quickSelect(String word) {
+		System.out.println("Quick Select");
+		String[] search= {word};
+		
+		File[] myfile=new File("C:\\Users\\MEERA\\Documents\\MAC\\ACC\\workspace\\WebSearchEngine\\TEXT").listFiles();
+		File[] result=new File[myfile.length];
+		//	CreateTST.createTST();
+		Integer[] list=new Integer[myfile.length]; 
+		
+		for(int n=0;n<myfile.length;n++) {
+			list[n]=0;
+		}
+		System.out.println(search);
+		for(int s=0;s<search.length;s++) {
+			if(CreateTST.st == null) {
+				System.out.println("st Null");
+			}
+			
+			System.out.println(CreateTST.st.get(search[s]));
+			int indextohash=CreateTST.st.get(search[s]);
+			for(int n=0;n<myfile.length;n++) {
+				list[n]=list[n]+CreateTST.index.get(indextohash).get(n);				
+			}
+		}
+		ArrayList<Integer> oldlist = new ArrayList<Integer>(Arrays.asList(list));
+	
+		for (int i = list.length-1; i >= 0; i--) {
+			int rank=QuickSelect.select(list, i);
+			System.out.println("Meera:::"+myfile[oldlist.indexOf(rank)]);
+			result[i]=myfile[oldlist.indexOf(rank)];
+			oldlist.set(oldlist.indexOf(rank), null);	
+		}
+		return result;
+	}
+	
 
 	public void countsearch(String cname) throws IOException {
 		HashMap<String, Integer> hashMap = new HashMap<String, Integer>();
 		int counter = 0;
 		ArrayList<String> arrayList = new ArrayList<String>();
-		File folder = new File(
-				"D:\\Sem 1\\Ad Computing Concept\\Nilam\\SearchEngine-master\\SearchEngine-master\\src\\textfile\\");
+		File folder = new File("C:\\Users\\MEERA\\Documents\\MAC\\W3C Web Pages\\W3C Web Pages\\Text\\");
 		File[] listOfFiles = folder.listFiles();
 
 		for (int i = 0; i < listOfFiles.length; i++) {
 			if (listOfFiles[i].isFile()) {
-				arrayList.add(
-						"D:\\Sem 1\\Ad Computing Concept\\Nilam\\SearchEngine-master\\SearchEngine-master\\src\\textfile\\"
-								+ listOfFiles[i].getName());
+				arrayList.add("C:\\Users\\MEERA\\Documents\\MAC\\W3C Web Pages\\W3C Web Pages\\Text\\\\"
+						+ listOfFiles[i].getName());
 				// System.out.println( listOfFiles[i].getName());
 			}
 		}
@@ -49,95 +116,75 @@ public class countmatch {
 			counter = 0;
 		}
 
-		/*
-		 * System.out.println("size"+hashMap.size());
-		 * System.out.println("Before Sorting:"); Set set = hashMap.entrySet(); Iterator
-		 * iterator = set.iterator(); while(iterator.hasNext()) { Map.Entry me =
-		 * (Map.Entry)iterator.next(); System.out.print(me.getKey() + ": ");
-		 * System.out.println(me.getValue()); }
-		 */
-
-		System.out.println("Searched results:");
+		System.out.println("\n------------------------Search Results------------------------");
 		Map<Integer, String> map = sortByValues(hashMap);
 		Set set2 = map.entrySet();
 		Iterator iterator2 = set2.iterator();
 		while (iterator2.hasNext()) {
 			Map.Entry me2 = (Map.Entry) iterator2.next();
 			if (!me2.getValue().equals(0)) {
-				System.out.print(me2.getKey() + ": ");
-				System.out.println(me2.getValue() + "  times occured");
+				System.out.println(me2.getKey() + " --> '" + cname + "' occures " + me2.getValue() + " times.\n");
 
 			}
 		}
 	}
 
-	public void puralsearch(String cname) throws IOException {
+	public void pluralSearch(String cname) throws IOException {
 		HashMap<String, Integer> hmap = new HashMap<String, Integer>();
 
 		int counter = 0;
 		ArrayList<String> arrayList = new ArrayList<String>();
-		File folder = new File(
-				"D:\\Sem 1\\Ad Computing Concept\\Nilam\\SearchEngine-master\\SearchEngine-master\\src\\textfile\\");
+		File folder = new File("C:\\Users\\MEERA\\Documents\\MAC\\W3C Web Pages\\W3C Web Pages\\Text\\\\");
 		File[] listOfFiles = folder.listFiles();
 
 		for (int i = 0; i < listOfFiles.length; i++) {
 			if (listOfFiles[i].isFile()) {
-				arrayList.add(
-						"D:\\Sem 1\\Ad Computing Concept\\Nilam\\SearchEngine-master\\SearchEngine-master\\src\\textfile\\"
-								+ listOfFiles[i].getName());
-				// System.out.println( listOfFiles[i].getName());
+				arrayList.add("C:\\Users\\MEERA\\Documents\\MAC\\W3C Web Pages\\W3C Web Pages\\Text\\\\"
+						+ listOfFiles[i].getName());
 			}
 		}
+		System.out.println("--------------------------Search Results--------------------------\n");
 		for (int i = 0; i < arrayList.size(); i++) {
 			org.jsoup.nodes.Document doc1 = Jsoup.parse(new File(arrayList.get(i)), "UTF-8", "www.w3sfjj.com");
 			String text = doc1.text();
-			String pattern = cname + "(ing|ed|er|s)";
+			// String pattern = cname + "(ing|ed|er|s)?";
+			String pattern = "\\b" + cname + "([a-zA-Z]+)?";
+
 			Pattern r = Pattern.compile(pattern);
 
-			// Now create matcher object.
 			Matcher m = r.matcher(text);
-			// System.out.println("***********************");
+
 			while (m.find()) {
 				counter++;
 				System.out.println(m.group());
 			}
-			System.out.println("====================================================================");
 
-			System.out.println(listOfFiles[i].getName() + ":-" + counter + "---words");
+			System.out.println(listOfFiles[i].getName() + " --> contains " + counter + " words.\n");
+			System.out.println("*********************************************************\n");
+
 			hmap.put(listOfFiles[i].getName(), counter);
 
-			System.out.println("====================================================================");
 			counter = 0;
 
-			/* String[] matchingword=text.split(" "); */
-			/*
-			 * for(int j=0;j<matchingword.length;j++){ if(matchingword[j].equals(cname)){
-			 * counter++; } }
-			 */
-			/*
-			 * System.out.println(listOfFiles[i].getName()+"file contain**********"+counter+
-			 * "**********words"); matchingword=null;
-			 */
 		}
-		System.out.println("Before Sorting:");
+		System.out.println("--------------------------Before Sorting--------------------------\n");
 		Set set = hmap.entrySet();
 		Iterator iterator = set.iterator();
 		while (iterator.hasNext()) {
 			Map.Entry me = (Map.Entry) iterator.next();
-			System.out.print(me.getKey() + ": ");
-			System.out.println(me.getValue());
+			System.out.print(me.getKey() + " --> ");
+			System.out.println(me.getValue() + " count \n");
 		}
 
 		Map<Integer, String> map = sortByValues(hmap);
-		System.out.println("After Sorting:------------------------------------------------------------------------");
+		System.out.println("--------------------------After Sorting--------------------------\n");
 		Set set2 = map.entrySet();
 		Iterator iterator2 = set2.iterator();
 		while (iterator2.hasNext()) {
 			Map.Entry me2 = (Map.Entry) iterator2.next();
-			System.out.print(me2.getKey() + ": ");
-			System.out.println(me2.getValue());
+			System.out.print(me2.getKey() + " --> ");
+			System.out.println(me2.getValue() + " count \n");
 		}
-
 	}
 
 	private static HashMap sortByValues(HashMap map) {
@@ -161,23 +208,6 @@ public class countmatch {
 		return sortedHashMap;
 	}
 
-	/*
-	 * public void editdistance(String name) throws IOException { int counter = 0;
-	 * ArrayList<String> arrayList = new ArrayList<String>(); File folder = new
-	 * File("C:\\Users\\Krunal\\Krunal\\computing\\src\\textfile\\"); File[]
-	 * listOfFiles = folder.listFiles();
-	 * 
-	 * for (int i = 0; i < listOfFiles.length; i++) { if (listOfFiles[i].isFile()) {
-	 * arrayList.add("C:\\Users\\Krunal\\Krunal\\computing\\src\\textfile\\"+
-	 * listOfFiles[i].getName()); // System.out.println( listOfFiles[i].getName());
-	 * } } for(int i=0;i<arrayList.size();i++){ org.jsoup.nodes.Document doc1 =
-	 * Jsoup.parse(new File(arrayList.get(i)), "UTF-8", "www.w3sfjj.com"); String
-	 * text = doc1.text(); String[] matchingword=text.split(" ");
-	 * 
-	 * }
-	 * 
-	 * }
-	 */
 	public int minDistance(String word1, String word2) {
 		int len1 = word1.length();
 		int len2 = word2.length();
@@ -193,7 +223,6 @@ public class countmatch {
 			dp[0][j] = j;
 		}
 
-		// iterate though, and check last char
 		for (int i = 0; i < len1; i++) {
 			char c1 = word1.charAt(i);
 			for (int j = 0; j < len2; j++) {
@@ -214,7 +243,6 @@ public class countmatch {
 				}
 			}
 		}
-
 		return dp[len1][len2];
 	}
 
