@@ -11,8 +11,11 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.Set;
+import java.util.StringTokenizer;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -45,13 +48,6 @@ public class mainController extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		/*
-		 * response.getWriter().append("Served at: ").append(request.getContextPath());
-		 * PrintWriter out=response.getWriter(); out.println("<form>");
-		 * out.println("<input type='text' name='sname'>");
-		 * out.println("<input type='submit' value='submit'>"); out.println("</form>");
-		 * doPost(request, response);
-		 */
 	}
 
 	/**
@@ -61,109 +57,134 @@ public class mainController extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		/*
-		 * PrintWriter out=response.getWriter(); String
-		 * name=request.getParameter("sname"); fileread fileread1=new fileread(); int
-		 * s1= fileread1.main(name); out.print("<a href='#'>1.html</a>");
-		 * out.println("Number of count="+s1); out.
-		 * println("<br/>Number of countvhjjas asjd sad asd sad asd adasd sadkjkjsajkd "
-		 * ); out.
-		 * println("<br/>Number of countvhjjas asjd sad asd sad asd adasd sadkjkjsajkd "
-		 * ); out.
-		 * println("<br/>Number of countvhjjas asjd sad asd sad asd adasd sadkjkjsajkd "
-		 * ); out.
-		 * println("<br/>Number of countvhjjas asjd sad asd sad asd adasd sadkjkjsajkd "
-		 * );
-		 */
 		String flag = request.getParameter("flag");
+
 		if (flag.equals("tname")) {
 			doSearch(request, response);
 		}
 	}
 
 	private void doSearch(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		
+		/*
+		 * try { if(CreateTST.st==null) CreateTST.createTST(); }catch(Exception e) {
+		 * e.printStackTrace(); }
+		 */
+		 
 		String sname = request.getParameter("sname");
+		String radio = request.getParameter("command");
+
 		String[] countarray = sname.split(" ");
-		// System.out.println("qweqweqwe");
 		for (int i = 0; i < countarray.length; i++) {
-			// System.out.println("qweqweqwe1");
-			if (countarray[i].contains("frequency")) {
-				// System.out.println("qweqweqwe if");
+
+			if (radio.equals("0")) {
+
 				Map<String, Integer> hashMap = new HashMap<String, Integer>();
 				countmatch c1 = new countmatch();
 				String name = countarray[0].toString();
-				c1.countsearch(name);
+				//c1.countsearch(name);
+				int count=0;
+				if(CreateTST.st.get(name) != null) {
+				 count =c1.findoccurences(name);
+				}
+				//response.setHeader("occ",Integer.toString(count) );
+				//response.setHeader("occ", Integer.toString(count));
+				request.setAttribute("occ", count);
+				try {
+			    request.getRequestDispatcher("/index.jsp").forward(request, response);
+				}catch(Exception e) {
+					e.printStackTrace();
+				}
 				/*
-				 * request.getSession().setAttribute("frequency",hashMap);
-				 * response.sendRedirect("frequencypage");
-				 */
-				/*
-				 * for (Map.Entry<String, Integer> entry : hashMap.entrySet()) { String key =
-				 * entry.getKey(); Integer tab = entry.getValue(); // do something with key
-				 * and/or tab System.out.println(entry.getKey()+"*****"+entry.getValue()); }
+				 * RequestDispatcher rd=request.getRequestDispatcher("index.jsp"); try {
+				 * rd.forward(request, response); }catch(Exception e) { e.printStackTrace(); }
 				 */
 				break;
-			} else if (countarray[i].contains("consist")) {
-				System.out.println("qweqweqwe else if consist");
-				countmatch c1 = new countmatch();
+			} else if (radio.equals("1")) {
+				
+				//countmatch c1 = new countmatch();
+				ArrayList<File> tenfiles=Main.selecttoptenpages(countarray);
+				/*
+				 * for(int num=0;num<10;num++) {
+				 * tenfiles.add(Main.selecttoptenpages(countarray,num)); }
+				 */
 				String name = countarray[0].toString();
-				c1.puralsearch(name);
+				
+			//	int count=c1.searchOccurance(name);
+				//File ans[]=c1.quickSelect(sname);
+				//ArrayList<Integer> count=new ArrayList<Integer>();
+				
+				
+				request.setAttribute("result", tenfiles);
+				//request.setAttribute("occ", count);
+				try {
+				    request.getRequestDispatcher("/index.jsp").forward(request, response);
+					}catch(Exception e) {
+						e.printStackTrace();
+					}
 				break;
 			}
 
-			else if (countarray[i].contains("editdistance")) {
-				System.out.println("qweqweqwe else if editdistance");
+			else if (radio.equals("2")) {
 				HashMap<String, Integer> hashMap = new HashMap<String, Integer>();
-				String[] matchingword;
+				// String[] matchingword;
 				countmatch c1 = new countmatch();
 				String name = countarray[0].toString();
-				System.out.println("as");
-				ArrayList<String> arrayList = new ArrayList<String>();
-				File folder = new File(
-						"D:\\Sem 1\\Ad Computing Concept\\Nilam\\SearchEngine-master\\SearchEngine-master\\src\\textfile\\");
+
+				File folder = new File("C:\\Users\\MEERA\\Documents\\MAC\\ACC\\workspace\\WebSearchEngine\\TEXT\\");
 				File[] listOfFiles = folder.listFiles();
 
 				for (int k = 0; k < listOfFiles.length; k++) {
 					if (listOfFiles[k].isFile()) {
-						// System.out.println("qweqweqwe else if consist"+ listOfFiles[k].isFile());
-						arrayList.add(
-								"D:\\Sem 1\\Ad Computing Concept\\Nilam\\SearchEngine-master\\SearchEngine-master\\src\\textfile\\"
-										+ listOfFiles[k].getName());
-						// System.out.println( listOfFiles[i].getName());
-					}
-				}
-				for (int j = 0; j < arrayList.size(); j++) {
-					org.jsoup.nodes.Document doc1 = Jsoup.parse(new File(arrayList.get(i)), "UTF-8", "www.w3sfjj.com");
-					String text = doc1.text();
-					matchingword = text.split(" ");
-					for (int l = 0; l < matchingword.length; l++) {
-						int a = c1.minDistance(name, matchingword[l]);
-						hashMap.put(matchingword[l], a);
-					}
 
+						In in = new In("C:\\Users\\MEERA\\Documents\\MAC\\ACC\\workspace\\WebSearchEngine\\TEXT\\"
+								+ listOfFiles[k].getName());
+						String textFiles = in.readAll();
+
+			//			Scanner sc = new Scanner(textFiles);
+			//			String x = sc.nextLine().replaceAll("[^a-zA-Z0-9]+", " ");
+
+						StringTokenizer strToken = new StringTokenizer(textFiles, " ");
+						int cnt = 0;
+
+						String token;
+						
+						while (strToken.hasMoreTokens()) {
+							token = strToken.nextToken();
+							String a = token.replaceAll("\"", " ");
+
+							if (a != " ") {
+								int check = c1.minDistance(name, token);
+								hashMap.put(token, check);
+							}
+						}
+					}
 				}
+
 				Map<Integer, String> map = sortByValues(hashMap);
 				Set set2 = map.entrySet();
 				Iterator iterator2 = set2.iterator();
 				String[] words = new String[5];
 				int kp = 0;
-				System.out.println("====================================");
-				System.out.println("List of related words of given word");
-				System.out.println("====================================");
+				String[] output=new String[5];
+				System.out.println("Suggested words of the searched word\n");
+				System.out.println("****************************************\n");
 				while (iterator2.hasNext() && kp < 5) {
 					Map.Entry me2 = (Map.Entry) iterator2.next();
-					// me2.getKey();
 					if (kp < 5) {
-
 						System.out.println(me2.getKey());
+						output[kp]=me2.getKey().toString();
 						kp++;
 					} else {
-
 					}
 				}
-				/*
-				 * for(int q=0;q<words.length;q++){ System.out.println(words[q]); }
-				 */
+				request.setAttribute("output", output);
+				//request.setAttribute("occ", count);
+				try {
+				    request.getRequestDispatcher("/index.jsp").forward(request, response);
+					}catch(Exception e) {
+						e.printStackTrace();
+					}
 				break;
 			}
 		}
@@ -178,8 +199,6 @@ public class mainController extends HttpServlet {
 			}
 		});
 
-		// Here I am copying the sorted list in HashMap
-		// using LinkedHashMap to preserve the insertion order
 		HashMap sortedHashMap = new LinkedHashMap();
 		for (Iterator it = list.iterator(); it.hasNext();) {
 			Map.Entry entry = (Map.Entry) it.next();
